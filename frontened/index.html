@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>CounselX — Your Rank. Your Future. Your Right College.</title>
+  <meta name="description" content="CounselX helps JEE aspirants explore historical JoSAA cutoffs, discover suitable colleges and compare options with data-driven counselling.">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style final.css">
+  <!-- Safety net: records script load/runtime errors so a broken setup is explained instead of failing silently. -->
+  <script>
+    window.__cxProblems = [];
+    window.addEventListener('error', function (e) {
+      if (e.target && e.target.tagName === 'SCRIPT') window.__cxProblems.push('Could not load: ' + (e.target.getAttribute('src') || 'script'));
+      else if (e.message) window.__cxProblems.push('Script error: ' + e.message);
+    }, true);
+  </script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<!-- ============ SVG SPRITE (icons used by the JS modules). Referenced with <use href="#i-name"> ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></symbol>
+  <symbol id="i-columns" viewBox="0 0 24 24"><rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/></symbol>
+  <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></symbol>
+  <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3 3 0 000-6H9a3 3 0 010-6h7"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.01"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5H5V6h5"/></symbol>
+  <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></symbol>
+  <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15v4M17 17h4"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></symbol>
+</svg>
+
+<!-- ================= HEADER (sticky, original CounselX style) ================= -->
+<header class="site-header">
+  <div class="w nb">
+    <a class="logo" href="#/home" aria-label="CounselX home"><i aria-hidden="true">🎓</i>CounselX</a>
+    <button class="icon-btn" id="menu-btn" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="nav">
+      <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg>
+    </button>
+    <nav class="nav" id="nav" aria-label="Primary navigation">
+      <a class="nav-link" href="#/home" data-route="home">Home</a>
+      <a class="nav-link" href="#/how" data-route="how">How It Works</a>
+      <a class="nav-link" href="#/explore" data-route="explore">Cutoffs</a>
+      <a class="nav-link" href="#/recommendations" data-route="recommendations">Recommendations</a>
+      <a class="nav-link" href="#/dashboard" data-route="dashboard">Dashboard</a>
+      <a class="nav-link" href="#/analytics" data-route="analytics">Analytics</a>
+      <a class="nav-link" href="#/compare" data-route="compare">Compare<span class="nav-badge" id="badge-compare" hidden>0</span></a>
+      <a class="nav-link" href="#/shortlist" data-route="shortlist">My List<span class="nav-badge" id="badge-shortlist" hidden>0</span></a>
+      <a class="nav-link" href="#/about" data-route="about">About</a>
+      <a class="nav-link" href="#/profile" data-route="profile">My Profile</a>
+      <a class="btn btn-primary btn-sm" href="#/profile">Get Started</a>
+    </nav>
+  </div>
+</header>
+<div class="scrim" id="scrim" hidden></div>
+
+<main id="main" tabindex="-1">
+
+  <!-- ================= HOME / LANDING ================= -->
+  <section class="page" id="page-home" data-title="Home" hidden>
+    <div class="hero">
+      <div class="hero-copy">
+        <span class="pill"><svg class="icon" aria-hidden="true"><use href="#i-sparkles"/></svg>Data-driven JoSAA counselling</span>
+        <h1 class="page-title hero-title" tabindex="-1">Your Smart Path to the Right College</h1>
+        <p class="lead">Enter your JEE rank and preferences. CounselX compares them with real historical JoSAA cutoffs and shows colleges and branches where you have a realistic chance, with the records behind every suggestion.</p>
+        <form class="hero-rank" id="hero-rank-form" novalidate>
+          <label for="hero-rank">Your JEE rank</label>
+          <div class="inline">
+            <input id="hero-rank" type="number" inputmode="numeric" min="1" placeholder="e.g. 8500">
+            <button class="btn btn-primary" type="submit">Start</button>
+          </div>
+        </form>
+        <div class="btn-row">
+          <a class="btn btn-secondary btn-lg" href="#/explore">Explore JoSAA Cutoffs</a>
+          <a class="btn btn-ghost btn-lg" href="#/how">See how it works</a>
+        </div>
+        <!-- <div class="hero-stats">
+          <div><span class="hero-stat-num" id="hero-record-count">—</span><span class="hero-stat-label">cutoff records in the database</span></div>
+          <div><span class="hero-stat-num">4</span><span class="hero-stat-label">institute groups: IIT · NIT · IIIT · GFTI</span></div>
+        </div> -->
+        <p class="tagline">Your Rank. Your Future. Your Right College.</p>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 400 340" fill="none">
+          <defs><linearGradient id="hero-g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4f46e5"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs>
+          <circle cx="200" cy="170" r="150" fill="url(#hero-g)" opacity=".15"/>
+          <rect x="110" y="200" width="180" height="90" rx="12" fill="#4f46e5"/><rect x="122" y="212" width="156" height="66" rx="6" fill="#eef0ff"/>
+          <rect x="134" y="228" width="60" height="8" rx="4" fill="#4f46e5"/><rect x="134" y="246" width="110" height="6" rx="3" fill="#a5b4fc"/><rect x="134" y="260" width="80" height="6" rx="3" fill="#c4b5fd"/>
+          <circle cx="200" cy="120" r="34" fill="#fcd9b6"/><path d="M162 116c0-34 76-34 76 0-18-14-58-14-76 0z" fill="#1e1b4b"/>
+          <path d="M140 100l60-28 60 28-60 28z" fill="#7c3aed"/><path d="M168 118v22c0 14 64 14 64 0v-22l-32 15z" fill="#5b21b6"/>
+          <path d="M260 100v34" stroke="#f59e0b" stroke-width="4"/><circle cx="260" cy="138" r="6" fill="#f59e0b"/>
+        </svg>
+        <div class="fl" style="top:24px;left:0">🎯 Safe · Target · Reach<small>Clear groups for every record</small></div>
+        <div class="fl" style="bottom:30px;right:0;animation-delay:1s">📊 Real JoSAA records<small>Straight from the database</small></div>
+      </div>
+    </div>
+
+    <div class="alt-band">
+      <section class="section" aria-labelledby="cap-title">
+        <h2 id="cap-title" class="section-title">Counselling made simple</h2>
+        <p class="section-sub">Everything a first-time JEE student needs to shortlist with confidence.</p>
+        <div class="grid grid-4">
+          <article class="card feature"><span class="ic" aria-hidden="true">📚</span><h3>Historical JoSAA cutoffs</h3><p>Browse opening and closing ranks by year, round, quota, category and gender pool.</p></article>
+          <article class="card feature"><span class="ic" aria-hidden="true">🎯</span><h3>Personalised discovery</h3><p>Enter your rank and profile to see colleges grouped as Safe, Target and Reach.</p></article>
+          <article class="card feature"><span class="ic" aria-hidden="true">🧭</span><h3>Explained recommendations</h3><p>Every suggestion shows the records and the rank comparison behind it.</p></article>
+          <article class="card feature"><span class="ic" aria-hidden="true">📊</span><h3>College comparison</h3><p>Compare programmes side by side and see exactly where they differ.</p></article>
+        </div>
+      </section>
+    </div>
+
+    <section class="section" id="how" aria-labelledby="how-title">
+      <h2 id="how-title" class="section-title">How CounselX Works</h2>
+      <p class="section-sub">Four easy steps from rank to shortlist.</p>
+      <ol class="steps">
+        <li class="card step"><span class="step-num">1</span><h3>Enter your profile</h3><p>Add your JEE rank, category, gender and home state.</p></li>
+        <li class="card step"><span class="step-num">2</span><h3>Set your preferences</h3><p>Choose branch, institute type, quota, year and round.</p></li>
+        <li class="card step"><span class="step-num">3</span><h3>Explore real cutoffs</h3><p>Search historical JoSAA records straight from the database.</p></li>
+        <li class="card step"><span class="step-num">4</span><h3>Review &amp; compare</h3><p>Shortlist options and compare them side by side.</p></li>
+      </ol>
+    </section>
+
+    <section class="section" aria-labelledby="tiers-title">
+      <h2 id="tiers-title" class="section-title">Safe, Target and Reach</h2>
+      <p class="section-sub">Every recommendation is labelled by comparing your rank with a real past closing rank.</p>
+      <div class="grid grid-3">
+        <article class="card tier-card tier-safe"><h3>Safe</h3><p>Your rank sits comfortably inside past closing ranks.</p></article>
+        <article class="card tier-card tier-target"><h3>Target</h3><p>Your rank is close to past closing ranks, so it is a realistic goal.</p></article>
+        <article class="card tier-card tier-reach"><h3>Reach</h3><p>Competitive. It needs a favourable cutoff movement.</p></article>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <h2>Ready to find your colleges?</h2>
+      <p>It takes about two minutes. Your profile stays in your browser.</p>
+      <a class="btn btn-primary btn-lg" href="#/profile">Get Started <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+    </section>
+  </section>
+
+  <!-- ================= DASHBOARD ================= -->
+  <section class="page" id="page-dashboard" data-title="Dashboard" hidden>
+    <header class="page-head">
+      <div><h1 class="page-title" tabindex="-1" id="dash-welcome">Welcome to CounselX</h1><p class="muted" id="dash-sub">Your counselling overview.</p></div>
+      <div class="btn-row"><a class="btn btn-secondary" href="#/profile">Edit profile</a><a class="btn btn-primary" href="#/recommendations">View recommendations</a></div>
+    </header>
+    <div id="dash-no-profile" class="card callout" hidden>
+      <h2>Set up your profile to personalise this dashboard</h2>
+      <p class="muted">Add your rank and preferences so CounselX can match them against real JoSAA records.</p>
+      <a class="btn btn-primary" href="#/profile">Create my profile</a>
+    </div>
+    <div class="grid grid-4" id="dash-stats">
+      <div class="card">
+  <h3>Total Records</h3>
+  <p id="total-records">-</p>
+</div>
+<div class="card">
+  <h3>Total Institutes</h3>
+  <p id="total-institutes">-</p>
+</div>
+<div class="card">
+  <h3>Total Programmes</h3>
+  <p id="total-programmes">-</p>
+</div>
+<div class="card">
+  <h3>Total Years</h3>
+  <p id="total-years">-</p>
+</div>
+    </div>
+    <div class="grid grid-2 mt">
+      <section class="card" aria-labelledby="dash-recent-title"><h2 id="dash-recent-title" class="card-title"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg> Recently viewed</h2><div id="dash-recent"></div></section>
+      <section class="card" aria-labelledby="dash-saved-title"><h2 id="dash-saved-title" class="card-title"><svg class="icon" aria-hidden="true"><use href="#i-bookmark"/></svg> Saved colleges</h2><div id="dash-saved"></div></section>
+    </div>
+  </section>
+
+  <!-- ================= PROFILE (multi-step) ================= -->
+  <section class="page" id="page-profile" data-title="My Profile" hidden>
+    <header class="page-head"><div><h1 class="page-title" tabindex="-1">Tell us about your rank</h1><p class="muted">We only ask for what the cutoff search needs. Nothing is sent to a server except search filters.</p></div></header>
+    <div id="profile-load-error" class="alert alert-error" role="alert" hidden></div>
+    <div class="card form-card">
+      <ol class="stepper" id="stepper" aria-label="Profile steps">
+        <li data-step="1"><span>1</span> JEE details</li>
+        <li data-step="2"><span>2</span> Preferences</li>
+        <li data-step="3"><span>3</span> Review</li>
+        <li data-step="4"><span>4</span> Discover</li>
+      </ol>
+      <form id="profile-form" novalidate>
+        <fieldset class="step-panel" data-panel="1">
+          <legend>Step 1 · JEE details</legend>
+          <div class="form-grid">
+            <div class="field"><label for="pf-rank">JEE rank</label><input id="pf-rank" type="number" inputmode="numeric" min="1" max="3000000" aria-describedby="pf-rank-error" autocomplete="off"><p class="field-error" id="pf-rank-error" role="alert"></p></div>
+            <div class="field"><label for="pf-rankType">Rank type</label><select id="pf-rankType" aria-describedby="pf-rankType-error"></select><p class="field-hint">Use CRL for your common rank, or the category rank your seat type uses.</p><p class="field-error" id="pf-rankType-error" role="alert"></p></div>
+            <div class="field"><label for="pf-seatCategory">Seat category</label><select id="pf-seatCategory" aria-describedby="pf-seatCategory-error"></select><p class="field-error" id="pf-seatCategory-error" role="alert"></p></div>
+            <div class="field"><label for="pf-gender">Gender</label><select id="pf-gender" aria-describedby="pf-gender-error"><option value="">Select…</option><option>Male</option><option>Female</option><option>Other</option></select><p class="field-error" id="pf-gender-error" role="alert"></p></div>
+            <div class="field"><label for="pf-homeState">Home state</label><select id="pf-homeState" aria-describedby="pf-homeState-error"></select><p class="field-error" id="pf-homeState-error" role="alert"></p></div>
+          </div>
+        </fieldset>
+
+        <fieldset class="step-panel" data-panel="2" hidden>
+          <legend>Step 2 · Preferences</legend>
+          <div class="form-grid">
+            <div class="field"><label for="pf-year">Counselling year</label><select id="pf-year" aria-describedby="pf-year-error"></select><p class="field-error" id="pf-year-error" role="alert"></p></div>
+            <div class="field"><label for="pf-round">JoSAA round</label><select id="pf-round" aria-describedby="pf-round-error"></select><p class="field-error" id="pf-round-error" role="alert"></p></div>
+            <div class="field"><label for="pf-quota">Preferred quota</label><select id="pf-quota" aria-describedby="pf-quota-error"></select><p class="field-hint">Records are never mixed across quotas (e.g. Home State vs Other State).</p><p class="field-error" id="pf-quota-error" role="alert"></p></div>
+            <div class="field"><label for="pf-genderPool">Gender pool</label><select id="pf-genderPool" aria-describedby="pf-genderPool-error"></select><p class="field-hint" id="pf-genderPool-hint">Female-only pools apply only to female candidates.</p><p class="field-error" id="pf-genderPool-error" role="alert"></p></div>
+            <div class="field"><label for="pf-instituteType">Institute type</label><select id="pf-instituteType"></select></div>
+            <div class="field"><label for="pf-branch">Preferred branch <span class="optional">(optional)</span></label><input id="pf-branch" list="dl-branch" type="text" placeholder="e.g. Computer Science" autocomplete="off" maxlength="80"><datalist id="dl-branch"></datalist></div>
+            <div class="field"><label for="pf-fee">Annual fee budget (₹) <span class="optional">(optional)</span></label><input id="pf-fee" type="number" inputmode="numeric" min="0" step="1000" placeholder="e.g. 250000"><p class="field-hint">Saved to your profile. Not used for filtering, as cutoff records contain no verified fee data.</p></div>
+            <div class="field"><label for="pf-location">Preferred location <span class="optional">(optional)</span></label><select id="pf-location"></select><p class="field-hint">Saved to your profile. Not used for filtering, as cutoff records contain no verified location data.</p></div>
+          </div>
+        </fieldset>
+
+        <fieldset class="step-panel" data-panel="3" hidden>
+          <legend>Step 3 · Review your profile</legend>
+          <dl class="review" id="profile-review"></dl>
+          <p class="alert alert-info">Recommendations are preliminary historical comparisons, not statistically validated admission probabilities.</p>
+        </fieldset>
+
+        <fieldset class="step-panel" data-panel="4" hidden>
+          <legend>Step 4 · Discover colleges</legend>
+          <p>Your profile is saved in this browser. Continue to see Safe, Target and Reach options built from real JoSAA records.</p>
+        </fieldset>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="pf-back">Back</button>
+          <button type="button" class="btn btn-primary" id="pf-next">Next</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ================= EXPLORE / SEARCH ================= -->
+  <section class="page" id="page-explore" data-title="Explore Cutoffs" hidden>
+    <header class="page-head">
+      <div><h1 class="page-title" tabindex="-1">Explore JoSAA cutoffs</h1><p class="muted">Each row is one record: a single institute, programme, year, round, quota, category, gender pool and rank type.</p></div>
+      <button type="button" class="btn btn-secondary" id="ex-use-profile">Use my profile</button>
+    </header>
+    <div id="explore-load-error" class="alert alert-error" role="alert" hidden></div>
+    <form class="card filters" id="explore-form" novalidate>
+      <div class="filter-grid">
+        <div class="field"><label for="ex-search">Search</label><input id="ex-search" type="search" placeholder="Institute or programme" maxlength="80"></div>
+        <div class="field"><label for="ex-instituteName">Institute name</label><input id="ex-instituteName" list="dl-institute" type="text" maxlength="120" autocomplete="off"><datalist id="dl-institute"></datalist></div>
+        <div class="field"><label for="ex-branch">Programme / branch</label><input id="ex-branch" list="dl-ex-branch" type="text" maxlength="120" autocomplete="off"><datalist id="dl-ex-branch"></datalist></div>
+        <div class="field"><label for="ex-instituteType">Institute type</label><select id="ex-instituteType"></select></div>
+        <div class="field"><label for="ex-year">Year</label><select id="ex-year"></select></div>
+        <div class="field"><label for="ex-round">Round</label><select id="ex-round"></select></div>
+        <div class="field"><label for="ex-quota">Quota</label><select id="ex-quota"></select></div>
+        <div class="field"><label for="ex-seatCategory">Seat category</label><select id="ex-seatCategory"></select></div>
+        <div class="field"><label for="ex-genderPool">Gender pool</label><select id="ex-genderPool"></select></div>
+        <div class="field"><label for="ex-rankType">Rank type</label><select id="ex-rankType"></select></div>
+        <div class="field"><label for="ex-rank">Your rank</label><input id="ex-rank" type="number" inputmode="numeric" min="1" placeholder="Optional"><p class="field-error" id="ex-rank-error" role="alert"></p></div>
+      </div>
+      <div class="btn-row"><button type="submit" class="btn btn-primary"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg> Search</button><button type="button" class="btn btn-ghost" id="ex-reset">Reset filters</button></div>
+    </form>
+    <div class="results-bar">
+      <p id="ex-count" class="muted" role="status" aria-live="polite">Run a search to see records.</p>
+      <div class="inline">
+        <label for="ex-sort" class="small muted">Sort this page</label>
+        <select id="ex-sort" class="select-sm"><option value="">API order</option><option value="closing-asc">Closing rank ↑</option><option value="closing-desc">Closing rank ↓</option><option value="opening-asc">Opening rank ↑</option><option value="opening-desc">Opening rank ↓</option></select>
+        <label for="ex-limit" class="small muted">Per page</label>
+        <select id="ex-limit" class="select-sm"><option>10</option><option selected>20</option><option>50</option></select>
+      </div>
+    </div>
+    <div id="ex-results"></div>
+    <nav class="pagination" id="ex-pagination" aria-label="Results pages"></nav>
+  </section>
+
+  <!-- ================= RECOMMENDATIONS ================= -->
+  <section class="page" id="page-recommendations" data-title="Recommendations" hidden>
+    <header class="page-head">
+      <div><h1 class="page-title" tabindex="-1">Your college recommendations</h1><p class="muted">Preliminary historical comparisons of your rank against real JoSAA closing ranks.</p></div>
+      <div class="btn-row"><a class="btn btn-secondary" href="#/profile">Edit profile</a><button type="button" class="btn btn-ghost" id="rec-refresh">Refresh</button></div>
+    </header>
+    <div class="alert alert-info" id="rec-disclaimer">These groups are <strong>not</strong> admission probabilities. They compare your rank with the closing rank of one specific historical record. Final allotment follows official JoSAA rules.</div>
+    <div id="rec-profile" class="chip-row"></div>
+    <div id="rec-status" role="status" aria-live="polite"></div>
+    <div class="results-bar" id="rec-tools" hidden>
+      <div class="inline"><label for="rec-filter" class="small muted">Filter</label><input id="rec-filter" type="search" class="input-sm" placeholder="Institute or programme" maxlength="60"></div>
+      <div class="inline"><label for="rec-sort" class="small muted">Order within groups</label><select id="rec-sort" class="select-sm"><option value="competitive">Most competitive first</option><option value="close">Closest to my rank first</option></select></div>
+    </div>
+    <div id="rec-groups"></div>
+  </section>
+
+  <!-- ================= COLLEGE DETAILS ================= -->
+  <section class="page" id="page-college" data-title="College details" hidden>
+    <a class="back-link" href="#/explore">‹ Back to search</a>
+    <h1 class="sr-only page-title" tabindex="-1" id="college-h1">College details</h1>
+    <div id="college-body"></div>
+  </section>
+
+  <!-- ================= ANALYTICS ================= -->
+  <section class="page" id="page-analytics" data-title="Analytics" hidden>
+    <header class="page-head"><div><h1 class="page-title" tabindex="-1">Cutoff analytics</h1><p class="muted">Charts are drawn only from records returned by the backend.</p></div></header>
+    <form class="card filters" id="analytics-form" novalidate>
+      <div class="filter-grid">
+        <div class="field"><label for="an-institute">Institute name</label><input id="an-institute" list="dl-an-institute" type="text" maxlength="120" autocomplete="off"><datalist id="dl-an-institute"></datalist></div>
+        <div class="field"><label for="an-branch">Programme / branch</label><input id="an-branch" list="dl-an-branch" type="text" maxlength="120" autocomplete="off"><datalist id="dl-an-branch"></datalist></div>
+        <div class="field"><label for="an-seatCategory">Seat category</label><select id="an-seatCategory"></select></div>
+        <div class="field"><label for="an-quota">Quota</label><select id="an-quota"></select></div>
+        <div class="field"><label for="an-genderPool">Gender pool</label><select id="an-genderPool"></select></div>
+        <div class="field"><label for="an-rankType">Rank type</label><select id="an-rankType"></select></div>
+        <div class="field"><label for="an-year">Year</label><select id="an-year"></select></div>
+        <div class="field"><label for="an-round">Round</label><select id="an-round"></select></div>
+      </div>
+      <div class="btn-row"><button type="submit" class="btn btn-primary"><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg> Load analytics</button></div>
+    </form>
+    <div id="analytics-status" role="status" aria-live="polite"></div>
+    <div class="grid grid-2" id="analytics-charts">
+      <article class="card chart-card" id="cc-year"><h2>Year-wise closing rank</h2><p class="chart-sub small muted">Same institute, programme, category, quota, gender pool, rank type and round.</p><div class="chart-body"><canvas aria-label="Year-wise closing rank chart" role="img"></canvas><p class="chart-empty">Choose an institute and programme, then load analytics.</p></div></article>
+      <article class="card chart-card" id="cc-round"><h2>Round-wise movement</h2><p class="chart-sub small muted">Opening and closing rank across rounds for the selected year.</p><div class="chart-body"><canvas aria-label="Round-wise movement chart" role="img"></canvas><p class="chart-empty">Choose an institute, programme and year.</p></div></article>
+      <article class="card chart-card" id="cc-openclose"><h2>Opening vs closing rank</h2><p class="chart-sub small muted">Per year, for the selected round.</p><div class="chart-body"><canvas aria-label="Opening versus closing rank chart" role="img"></canvas><p class="chart-empty">Choose an institute and programme.</p></div></article>
+      <article class="card chart-card" id="cc-branches"><h2>Branch-wise trends</h2><p class="chart-sub small muted">Closing rank by year for programmes at the selected institute.</p><div class="chart-body"><canvas aria-label="Branch-wise closing rank trends chart" role="img"></canvas><p class="chart-empty">Choose an institute.</p></div></article>
+      <article class="card chart-card chart-wide" id="cc-institutes"><h2>Institute-wise comparison</h2><p class="chart-sub small muted">Closing ranks of the selected programme across institutes for the selected year and round (up to 12 shown).</p><div class="chart-body chart-tall"><canvas aria-label="Institute-wise closing rank comparison chart" role="img"></canvas><p class="chart-empty">Choose a programme, year and round.</p></div></article>
+    </div>
+    <p class="alert alert-info mt">Historical cutoff changes do not guarantee future admission outcomes. A lower rank number is better, so charts show rank on a reversed axis (higher on the chart means a better rank).</p>
+  </section>
+
+  <!-- ================= COMPARE ================= -->
+  <section class="page" id="page-compare" data-title="Compare" hidden>
+    <header class="page-head"><div><h1 class="page-title" tabindex="-1">Compare colleges</h1><p class="muted">Add up to 4 records using the Compare button on any result.</p></div><button type="button" class="btn btn-ghost" id="cmp-clear">Clear comparison</button></header>
+    <div id="cmp-body"></div>
+  </section>
+
+  <!-- ================= SHORTLIST ================= -->
+  <section class="page" id="page-shortlist" data-title="Shortlist" hidden>
+    <header class="page-head"><div><h1 class="page-title" tabindex="-1">Saved colleges</h1><p class="muted">Your personal shortlist, kept in this browser only.</p></div><button type="button" class="btn btn-ghost" id="sl-clear">Remove all</button></header>
+    <p class="alert alert-info">Saved records are a personal reading list. They are <strong>not</strong> your verified JoSAA choice list. Fill choices only on the official JoSAA portal.</p>
+    <div id="sl-body"></div>
+  </section>
+
+  <!-- ================= ABOUT ================= -->
+  <section class="page" id="page-about" data-title="About" hidden>
+    <header class="page-head"><div><h1 class="page-title" tabindex="-1">About CounselX</h1><p class="muted">A student-built counselling aid for JEE aspirants.</p></div></header>
+    <div class="grid grid-2">
+      <div class="card"><h3>❓ What it is</h3><p style="margin:0">CounselX turns historical JoSAA opening and closing ranks into something searchable, comparable and easy to understand.</p></div>
+      <div class="card"><h3>⚙️ How recommendations work</h3><p style="margin:0">CounselX filters records to exactly one year, round, quota, seat category, gender pool and rank type. It then compares your rank with each record's closing rank using a transparent ratio rule. It is a rule-based comparison, <strong>not</strong> a trained prediction model and not an admission probability.</p></div>
+      <div class="card"><h3>🚫 What it does not do</h3><p style="margin:0">It does not guarantee admission, show fees, placements or locations unless verified data exists, or replace the official JoSAA portal.</p></div>
+      <div class="card"><h3>🚀 Future scope</h3><p style="margin:0">Explainable cutoff forecasting with backtesting, verified fee and location data, and a counsellor Q&amp;A mode.</p></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <a class="logo" href="#/home" aria-label="CounselX home" style="margin-bottom:10px"><i aria-hidden="true">🎓</i>CounselX</a>
+      <p class="small">Your Rank. Your Future. Your Right College.</p>
+    </div>
+    <nav aria-label="Footer"><h2 class="footer-h">Explore</h2><a href="#/home">Home</a><a href="#/how">How it works</a><a href="#/explore">JoSAA cutoff explorer</a><a href="#/about">About</a></nav>
+    <nav aria-label="Legal"><h2 class="footer-h">Information</h2><button type="button" class="link-btn" data-dialog="dlg-contact">Contact</button><button type="button" class="link-btn" data-dialog="dlg-privacy">Privacy policy</button><p class="small" style="margin-top:12px">© 2026 CounselX · B.Tech Macro Project</p></nav>
+  </div>
+  <p class="disclaimer"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg><span>CounselX provides information and historical cutoff-based insights to support students during college counselling. Historical cutoffs do not guarantee admission. Final seat allotment is governed by official JoSAA counselling rules and the official counselling authority.</span></p>
+</footer>
+
+<div id="compare-tray" class="compare-tray" hidden><span id="compare-tray-text"></span><a class="btn btn-primary btn-sm" href="#/compare">Compare now</a></div>
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<div class="sr-only" id="sr-status" role="status" aria-live="polite"></div>
+
+<dialog id="dlg-privacy" class="dialog" aria-labelledby="dlg-privacy-t"><h2 id="dlg-privacy-t">Privacy policy</h2><p>CounselX collects only what the cutoff search needs. Your profile, shortlist and comparison are stored in your own browser (localStorage) and are not uploaded. The only data sent to the server are the search filters you choose, such as year, category and rank.</p><button class="btn btn-primary" data-close>Close</button></dialog>
+<dialog id="dlg-contact" class="dialog" aria-labelledby="dlg-contact-t"><h2 id="dlg-contact-t">Contact</h2><p>CounselX is a B.Tech project prototype. Add your team's contact details here in <code>index.html</code> before sharing publicly.</p><button class="btn btn-primary" data-close>Close</button></dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
+<script src="config.js" defer></script>
+<script src="../js/utils.js" defer></script>
+<script src="../js/store.js" defer></script>
+<script src="../js/api.js" defer></script>
+<script src="../js/components.js" defer></script>
+<script src="../js/charts.js" defer></script>
+<script src="../js/profile.js" defer></script>
+<script src="../js/dashboard.js" defer></script>
+<script src="../js/colleges.js" defer></script>
+<script src="../js/recommendations.js" defer></script>
+<script src="../js/details.js" defer></script>
+<script src="../js/comparison.js" defer></script>
+<script src="../js/analytics.js" defer></script>
+<!-- <script src="../script.js" defer></script> -->
+<script>
+  /* If the main app did not start (missing/misplaced JS file), explain why and keep the static pages navigable. */
+  window.addEventListener('load', function () {
+    var CX = window.CX || {};
+    var ok = CX.utils && CX.api && CX.profile && CX.dashboard && CX.colleges && CX.recommendations && CX.details && CX.comparison && CX.analytics && CX.router;
+    var anyVisible = Array.prototype.some.call(document.querySelectorAll('.page'), function (p) { return !p.hidden; });
+    if (ok && anyVisible && !window.__cxProblems.some(function (m) { return m.indexOf('Script error') === 0; })) return;
+
+    var probs = window.__cxProblems.length ? window.__cxProblems : ['The app scripts did not start.'];
+    // var box = document.createElement('div');
+    // box.className = 'alert alert-error';
+    // box.setAttribute('role', 'alert');
+    // box.innerHTML = '<strong>CounselX could not start completely.</strong> Check that <code>script.js</code> is next to <code>index.html</code> and all other .js files are inside a folder named <code>js</code>. Open the browser console (F12) for details.<br><small></small>';
+    // box.querySelector('small').textContent = probs.slice(0, 6).join(' · ');
+    // document.getElementById('main').prepend(box);
+
+    function show() {
+      var name = (location.hash.replace(/^#\/?/, '').split('/')[0]) || 'home';
+      if (name === 'how') name = 'home';
+      var target = document.getElementById('page-' + name) ? name : 'home';
+      Array.prototype.forEach.call(document.querySelectorAll('.page'), function (p) { p.hidden = p.id !== 'page-' + target; });
+      if (location.hash.indexOf('how') > -1) { var h = document.getElementById('how'); if (h) h.scrollIntoView(); } else window.scrollTo(0, 0);
+    }
+    window.addEventListener('hashchange', show);
+    show();
+  });
+</script>
+</body>
+</html>
