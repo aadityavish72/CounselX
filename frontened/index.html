@@ -84,8 +84,12 @@
         <h1 class="page-title hero-title" tabindex="-1">Your Smart Path to the Right College</h1>
         <p class="lead">Enter your JEE rank and preferences. CounselX compares them with real historical JoSAA cutoffs and shows colleges and branches where you have a realistic chance, with the records behind every suggestion.</p>
         <form class="hero-rank" id="hero-rank-form" novalidate>
-          <label for="hero-rank">Your JEE rank</label>
+          <label for="hero-rank" id="hero-rank-label">Your JEE rank</label>
           <div class="inline">
+            <select id="hero-inst-type" style="max-width: 155px; background: #fff; border: 1px solid var(--bdr); border-radius: 8px; padding: 0 10px; font-weight: 600; font-size: 0.95rem;">
+              <option value="NIT">NIT (JEE Main)</option>
+              <option value="IIT">IIT (JEE Advanced)</option>
+            </select>
             <input id="hero-rank" type="number" inputmode="numeric" min="1" placeholder="e.g. 8500">
             <button class="btn btn-primary" type="submit">Start</button>
           </div>
@@ -265,16 +269,22 @@
         <div class="field"><label for="ex-quota">Quota</label><select id="ex-quota"></select></div>
         <div class="field"><label for="ex-seatCategory">Seat category</label><select id="ex-seatCategory"></select></div>
         <div class="field"><label for="ex-genderPool">Gender pool</label><select id="ex-genderPool"></select></div>
-        <div class="field"><label for="ex-rankType">Rank type</label><select id="ex-rankType"></select></div>
-        <div class="field"><label for="ex-rank">Your rank</label><input id="ex-rank" type="number" inputmode="numeric" min="1" placeholder="Optional"><p class="field-error" id="ex-rank-error" role="alert"></p></div>
+        <div class="field"><label for="ex-rankType">Rank category</label><select id="ex-rankType"></select></div>
+        <div class="field">
+          <label for="ex-rank" id="ex-rank-label">Your rank</label>
+          <input id="ex-rank" type="number" inputmode="numeric" min="1" step="1" placeholder="Optional (e.g. 4500)" autocomplete="off">
+          <p class="field-hint" id="ex-rank-hint">Select an Institute Type above (IIT for JEE Advanced, NIT/IIIT/GFTI for JEE Main).</p>
+          <p class="field-error" id="ex-rank-error" role="alert"></p>
+        </div>
       </div>
+      <div id="ex-exam-alert" class="alert alert-warn" role="alert" hidden style="margin-top: 14px; margin-bottom: 8px;"></div>
       <div class="btn-row"><button type="submit" class="btn btn-primary"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg> Search</button><button type="button" class="btn btn-ghost" id="ex-reset">Reset filters</button></div>
     </form>
     <div class="results-bar">
       <p id="ex-count" class="muted" role="status" aria-live="polite">Run a search to see records.</p>
       <div class="inline">
-        <label for="ex-sort" class="small muted">Sort this page</label>
-        <select id="ex-sort" class="select-sm"><option value="">API order</option><option value="closing-asc">Closing rank ↑</option><option value="closing-desc">Closing rank ↓</option><option value="opening-asc">Opening rank ↑</option><option value="opening-desc">Opening rank ↓</option></select>
+        <label for="ex-sort" class="small muted">Sort results</label>
+        <select id="ex-sort" class="select-sm"><option value="">Default (Year & Round)</option><option value="closing-asc">Closing rank ↑</option><option value="closing-desc">Closing rank ↓</option><option value="opening-asc">Opening rank ↑</option><option value="opening-desc">Opening rank ↓</option><option value="institute-asc">Institute Name (A–Z)</option><option value="institute-desc">Institute Name (Z–A)</option></select>
         <label for="ex-limit" class="small muted">Per page</label>
         <select id="ex-limit" class="select-sm"><option>10</option><option selected>20</option><option>50</option></select>
       </div>
@@ -311,8 +321,18 @@
     <header class="page-head"><div><h1 class="page-title" tabindex="-1">Cutoff analytics</h1><p class="muted">Charts are drawn only from records returned by the backend.</p></div></header>
     <form class="card filters" id="analytics-form" novalidate>
       <div class="filter-grid">
-        <div class="field"><label for="an-institute">Institute name</label><input id="an-institute" list="dl-an-institute" type="text" maxlength="120" autocomplete="off"><datalist id="dl-an-institute"></datalist></div>
-        <div class="field"><label for="an-branch">Programme / branch</label><input id="an-branch" list="dl-an-branch" type="text" maxlength="120" autocomplete="off"><datalist id="dl-an-branch"></datalist></div>
+        <div class="field">
+          <label for="an-institute">Institute name</label>
+          <input id="an-institute" list="dl-an-institute" type="text" maxlength="120" placeholder="Type to search (e.g. IIT Bombay)" autocomplete="off">
+          <datalist id="dl-an-institute"></datalist>
+          <p class="field-hint">All 55+ institutes loaded. Clear box or type to search.</p>
+        </div>
+        <div class="field">
+          <label for="an-branch">Programme / branch</label>
+          <input id="an-branch" list="dl-an-branch" type="text" maxlength="120" placeholder="Type branch (e.g. Computer Science)" autocomplete="off">
+          <datalist id="dl-an-branch"></datalist>
+          <p class="field-hint">Clear box to see all branches.</p>
+        </div>
         <div class="field"><label for="an-seatCategory">Seat category</label><select id="an-seatCategory"></select></div>
         <div class="field"><label for="an-quota">Quota</label><select id="an-quota"></select></div>
         <div class="field"><label for="an-genderPool">Gender pool</label><select id="an-genderPool"></select></div>
@@ -392,7 +412,7 @@
 <script src="../js/details.js" defer></script>
 <script src="../js/comparison.js" defer></script>
 <script src="../js/analytics.js" defer></script>
-<!-- <script src="../script.js" defer></script> -->
+<script src="../js/app.js" defer></script>
 <script>
   /* If the main app did not start (missing/misplaced JS file), explain why and keep the static pages navigable. */
   window.addEventListener('load', function () {

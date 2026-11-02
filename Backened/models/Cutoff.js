@@ -1,13 +1,9 @@
-
 const mongoose = require("mongoose");
 
 const cutoffSchema = new mongoose.Schema(
   {
     year: {
-      type: Number,
-      // required: true,
-      // min: 2000,
-      // max: 2100
+      type: Number
     },
 
     round: {
@@ -17,56 +13,80 @@ const cutoffSchema = new mongoose.Schema(
     },
 
     instituteType: {
-      type: String,
-      required: true,
-      enum: ["IIT", "NIT", "IIIT", "GFTI"]
+      type: String
     },
 
     instituteName: {
       type: String,
-      required: true,
+      trim: true
+    },
+
+    institute: {
+      type: String,
       trim: true
     },
 
     programName: {
       type: String,
-      required: true,
       trim: true
+    },
+
+    academicProgram: {
+      type: String,
+      trim: true
+    },
+
+    degree: {
+      type: String,
+      trim: true
+    },
+
+    durationYears: {
+      type: Number
     },
 
     quota: {
       type: String,
-      required: true,
       trim: true
     },
 
     seatType: {
       type: String,
-      required: true,
+      trim: true
+    },
+
+    seatCategory: {
+      type: String,
       trim: true
     },
 
     gender: {
       type: String,
-      required: true,
+      trim: true
+    },
+
+    genderPool: {
+      type: String,
       trim: true
     },
 
     rankType: {
       type: String,
-      required: true,
+      trim: true
+    },
+
+    examRankType: {
+      type: String,
       trim: true
     },
 
     openingRank: {
       type: Number,
-      required: true,
       min: 0
     },
 
     closingRank: {
       type: Number,
-      required: true,
       min: 0
     },
 
@@ -90,6 +110,11 @@ const cutoffSchema = new mongoose.Schema(
       default: false
     },
 
+    isPreparatoryRank: {
+      type: Boolean,
+      default: false
+    },
+
     source: {
       type: String,
       default: "JoSAA"
@@ -101,20 +126,18 @@ const cutoffSchema = new mongoose.Schema(
     }
   },
   {
-    timestamps: true
-  },
-  {
-    // strict: false,
+    timestamps: true,
+    strict: false,
     collection: "josaa_cutoff_2026",
     versionKey: false
   }
 );
 
-// Query performance improve karne ke liye indexes
 cutoffSchema.index({
   year: 1,
   round: 1,
-  instituteType: 1
+  instituteType: 1,
+  examRankType: 1
 });
 
 cutoffSchema.index({
@@ -132,4 +155,3 @@ const Cutoff = mongoose.model(
 );
 
 module.exports = Cutoff;
-

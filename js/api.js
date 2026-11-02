@@ -1,127 +1,6 @@
-// (function () {
-//   "use strict";
-
-//   window.CX = window.CX || {};
-
-//   const config = window.CX.config;
-
-//   async function request(path, options = {}) {
-//     const controller = new AbortController();
-
-//     const timeoutId = setTimeout(
-//       () => controller.abort(),
-//       config.REQUEST_TIMEOUT
-//     );
-
-//     try {
-//       let response = await fetch(
-//         `${config.API_BASE_URL}${path}`,
-//         {
-//           ...options,
-//           signal: controller.signal,
-//           headers: {
-//             Accept: "application/json",
-//             ...(options.headers || {})
-//           }
-//         }
-//       );
-
-//       let contentType =
-//         response.headers.get("content-type") || "";
-
-//       let data;
-
-//       if (contentType.includes("application/json")) {
-//         data = await response.json();
-//       } else {
-//         let text = await response.text();
-//         throw new Error(
-//           text || `Server returned HTTP ${response.status}`
-//         );
-//       }
-
-//       if (!response.ok) {
-//         throw new Error(
-//           data.message ||
-//           data.error ||
-//           `Request failed with status ${response.status}`
-//         );
-//       }
-
-//       return data;
-//     } catch (error) {
-//       if (error.name === "AbortError") {
-//         throw new Error(
-//           "Backend response mein der ho rahi hai. Server status check karo."
-//         );
-//       }
-
-//       if (
-//         error instanceof TypeError
-//       ) {
-//         throw new Error(
-//           "Backend se connection nahi ho raha. Server URL aur server status check karo."
-//         );
-//       }
-
-//       throw error;
-//     } finally {
-//       clearTimeout(timeoutId);
-//     }
-//   }
-
-//   const api = {
-//     get(path) {
-//       return request(path);
-//     },
-
-//     post(path, body) {
-//       return request(path, {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json"
-//         },
-//         body: JSON.stringify(body)
-//       });
-//     },
-
-//     checkBackend() {
-//       return request("/db-status");
-//     },
-
-//     getCutoffs(filters = {}) {
-//       const params = new URLSearchParams();
-
-//       Object.entries(filters).forEach(([key, value]) => {
-//         if (
-//           value !== undefined &&
-//           value !== null &&
-//           String(value).trim() !== ""
-//         ) {
-//           params.set(key, String(value).trim());
-//         }
-//       });
-
-//       const query = params.toString();
-
-//       return request(
-//         `/cutoffs${query ? `?${query}` : ""}`
-//       );
-//     },
-
-//     getCutoffFilters() {
-//       return request("/cutoffs/filters");
-//     }
-//   };
-
-//   window.CX.api = api;
-// })();
-
-
 (function () {
   "use strict";
 
-  // Ensure the CounselX namespace exists.
   window.CX = window.CX || {};
   window.CX.api = window.CX.api || {};
 
@@ -131,11 +10,15 @@
     config.API_BASE_URL || "http://localhost:5000/api"
   ).replace(/\/+$/, "");
 
+  function getBaseUrl() {
+    const cfg = window.CX?.config || {};
+    return String(cfg.API_BASE_URL || API_BASE_URL || "http://localhost:5000/api").replace(/\/+$/, "");
+  }
+
   const REQUEST_TIMEOUT = Number(config.REQUEST_TIMEOUT) || 15000;
 
   /**
    * Convert filters into a query string.
-   * Empty values are skipped; values such as 0 are preserved.
    */
   function buildQuery(params = {}) {
     const query = new URLSearchParams();
@@ -161,17 +44,14 @@
       throw new Error("API endpoint specify nahi kiya gaya.");
     }
 
-    // Pass paths such as "/cutoffs", not "/api/cutoffs".
     const endpoint = path.replace(/^\/+/, "");
-
     const queryString = buildQuery(queryParams);
 
     const url =
-      `${API_BASE_URL}/${endpoint}` +
+      `${getBaseUrl()}/${endpoint}` +
       (queryString ? `?${queryString}` : "");
 
     const controller = new AbortController();
-
     const timeoutId = setTimeout(
       () => controller.abort(),
       REQUEST_TIMEOUT
@@ -186,9 +66,7 @@
         signal: controller.signal
       });
 
-      const contentType =
-        response.headers.get("content-type") || "";
-
+      const contentType = response.headers.get("content-type") || "";
       const responseText = await response.text();
 
       let data = null;
@@ -244,20 +122,31 @@
 
   /**
    * Fetch cutoff records with filters and pagination.
-   *
-   * Supported query keys depend on the backend:
-   * year, round, instituteType, instituteName, branch, quota,
-   * seatCategory, genderPool, rankType, rank, search, page, limit.
    */
   async function getCutoffs(filters = {}) {
     return request("/cutoffs", filters);
   }
 
   /**
-   * Fetch values available for cutoff filters.
+   * Fetch values available for cutoff filters (supports optional query constraints).
    */
-  async function getCutoffFilters() {
-    return request("/cutoffs/filters");
+  async function getCutoffFilters(queryParams = {}) {
+    return request("/cutoffs/filters", queryParams);
+  }
+
+  /**
+   * Fetch single cutoff record by MongoDB ID.
+   */
+  async function getCutoffById(id) {
+    if (!id) throw new Error("Cutoff record ID required.");
+    return request(`/cutoffs/${encodeURIComponent(id)}`);
+  }
+
+  /**
+   * Fetch dashboard summary data.
+   */
+  async function getDashboardSummary() {
+    return request("/dashboard/summary");
   }
 
   /**
@@ -274,16 +163,55 @@
     return request("/test-cutoffs");
   }
 
-  // Keep the generic GET helper for dashboard and analytics APIs.
+  /**
+   * Fetch explainable student counselling recommendations.
+   */
+  async function getCounsellingRecommendations(profile = {}) {
+    return request("/recommendations/counsel", profile);
+  }
+
+  /**
+   * Fetch 4-factor advanced college recommendations.
+   */
+  async function getAdvancedRecommendations(profile = {}) {
+    try {
+      return await request("/recommendations/advanced", profile);
+    } catch (err) {
+      if (err.message && (err.message.includes("404") || err.message.toLowerCase().includes("not found"))) {
+        return await request("/recommendations", profile);
+      }
+      throw err;
+    }
+  }
+
+  /**
+   * Fetch cutoff trajectory prediction for a specific college allotment.
+   */
+  async function predictCutoff(params = {}) {
+    return request("/predict/cutoff", params);
+  }
+
+  /**
+   * Fetch historical backtesting evaluation report.
+   */
+  async function getBacktestReport(trainingRound = 2) {
+    return request("/predict/backtest", { trainingRound });
+  }
+
   function get(path, queryParams = {}) {
     return request(path, queryParams);
   }
 
-  // Preserve any other API functions already attached to CX.api.
   Object.assign(window.CX.api, {
     get,
     getCutoffs,
     getCutoffFilters,
+    getCutoffById,
+    getDashboardSummary,
+    getCounsellingRecommendations,
+    getAdvancedRecommendations,
+    predictCutoff,
+    getBacktestReport,
     checkBackend,
     testCutoffs
   });
