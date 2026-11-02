@@ -123,15 +123,6 @@
         return;
       }
 
-      // Save into profile
-      const currentProfile = store?.getProfile() || {};
-      store?.saveProfile({
-        ...currentProfile,
-        rank: val,
-        instituteType: instType,
-        examRankType
-      });
-
       // Populate explore rank and instituteType
       const exRank = $("ex-rank");
       if (exRank) exRank.value = val;
@@ -141,8 +132,18 @@
         exType.dispatchEvent(new Event("change"));
       }
 
+      // Save into profile
+      const currentProfile = store?.getProfile() || {};
+      store?.saveProfile({
+        ...currentProfile,
+        rank: val,
+        instituteType: instType,
+        examRankType
+      });
+
       utils?.toast(`${examName} Rank ${utils.formatNumber(val)} saved! Loading ${instType} cutoffs…`, "info");
       window.location.hash = "#/explore";
+      window.CX.colleges?.loadCutoffs();
     });
   }
 

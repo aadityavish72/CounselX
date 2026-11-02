@@ -272,13 +272,21 @@ function buildCutoffFilters(query = {}) {
 
   const branchVal = branch || query.programName || query.academicProgram;
   if (branchVal && branchVal.trim()) {
-    const safeBranch = escapeRegex(branchVal.trim());
-    queryConditions.push({
-      $or: [
-        { academicProgram: { $regex: safeBranch, $options: "i" } },
-        { programName: { $regex: safeBranch, $options: "i" } }
-      ]
-    });
+    const rawBranch = branchVal.trim();
+    const safeBranch = escapeRegex(rawBranch);
+    const cleanBranch = escapeRegex(rawBranch.replace(/\s*\([^)]*\)/g, "").trim());
+
+    const branchConditions = [
+      { academicProgram: { $regex: safeBranch, $options: "i" } },
+      { programName: { $regex: safeBranch, $options: "i" } }
+    ];
+    if (cleanBranch && cleanBranch !== safeBranch) {
+      branchConditions.push(
+        { academicProgram: { $regex: cleanBranch, $options: "i" } },
+        { programName: { $regex: cleanBranch, $options: "i" } }
+      );
+    }
+    queryConditions.push({ $or: branchConditions });
   }
 
   if (quota && quota.trim()) {

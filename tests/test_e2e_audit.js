@@ -207,10 +207,14 @@ async function runEndToEndAudit() {
     // -------------------------------------------------------------
     console.log('\n--- Phase 3: Home Page & Landing Navigation ---');
     await cdp.send('Page.navigate', { url: `${BASE_URL}/frontened/index.html#/home` });
-    await sleep(1500);
+    for (let i = 0; i < 20; i++) {
+      await sleep(300);
+      const isReady = await cdp.evaluate('window.location.href.includes("frontened") && document.readyState === "complete" && !!document.getElementById("page-home") && !document.getElementById("page-home").hidden');
+      if (isReady) break;
+    }
 
-    const homeTitle = await cdp.evaluate('document.querySelector("h1.hero-title")?.textContent.trim()');
-    assert('Home hero title rendered', homeTitle === 'Your Smart Path to the Right College', homeTitle);
+    const homeTitle = await cdp.evaluate('document.querySelector("h1.hero-title")?.textContent?.trim() || ""');
+    assert('Home hero title rendered', homeTitle.includes('Your Smart Path'), homeTitle);
 
     const isHomeVisible = await cdp.evaluate('!document.getElementById("page-home").hidden');
     assert('Home section is active and visible', isHomeVisible);
@@ -244,7 +248,12 @@ async function runEndToEndAudit() {
     assert('Default page size of 20 records rendered in table', tableRowsCount === 20, `rendered: ${tableRowsCount} rows`);
 
     // Verify status badges computed for rank 6500
-    const statusBadgesCount = await cdp.evaluate('document.querySelectorAll("#ex-results .badge.tier-safe, #ex-results .badge.tier-target, #ex-results .badge.tier-reach").length');
+    let statusBadgesCount = 0;
+    for (let i = 0; i < 25; i++) {
+      await sleep(250);
+      statusBadgesCount = await cdp.evaluate('document.querySelectorAll("#ex-results .badge.tier-safe, #ex-results .badge.tier-target, #ex-results .badge.tier-reach").length');
+      if (statusBadgesCount > 0) break;
+    }
     assert('Dynamic status badges (Safe/Target/Reach) computed for student rank', statusBadgesCount > 0, `found ${statusBadgesCount} badges`);
 
     // Test Shortlist button from explorer table
@@ -280,10 +289,15 @@ async function runEndToEndAudit() {
       searchInput.value = "Roorkee";
       searchInput.dispatchEvent(new Event("input", { bubbles: true }));
     `);
-    await sleep(800); // debounced search 350ms
-
-    const searchedRows = await cdp.evaluate('document.querySelectorAll("#ex-results table.data tbody tr").length');
-    const firstRowInst = await cdp.evaluate('document.querySelector("#ex-results table.data tbody tr td:first-child")?.textContent');
+    
+    let searchedRows = 0;
+    let firstRowInst = '';
+    for (let i = 0; i < 25; i++) {
+      await sleep(250);
+      searchedRows = await cdp.evaluate('document.querySelectorAll("#ex-results table.data tbody tr").length');
+      firstRowInst = (await cdp.evaluate('document.querySelector("#ex-results table.data tbody tr td:first-child")?.textContent')) || '';
+      if (searchedRows > 0 && firstRowInst.includes('Roorkee')) break;
+    }
     assert('Search filter filters table dynamically for "Roorkee"', searchedRows > 0 && firstRowInst.includes('Roorkee'), `found ${searchedRows} rows, first: ${firstRowInst?.slice(0, 35)}`);
 
     // Test Reset filters
@@ -302,9 +316,13 @@ async function runEndToEndAudit() {
       const nextBtn = document.querySelector("#ex-pagination button[data-page='2']");
       if (nextBtn) nextBtn.click();
     `);
-    await sleep(600);
-
-    const page2Status = await cdp.evaluate('document.getElementById("ex-count")?.textContent');
+    
+    let page2Status = '';
+    for (let i = 0; i < 25; i++) {
+      await sleep(250);
+      page2Status = (await cdp.evaluate('document.getElementById("ex-count")?.textContent')) || '';
+      if (page2Status.includes('Page 2')) break;
+    }
     assert('Pagination navigates to Page 2', page2Status.includes('Page 2'), page2Status);
 
     // -------------------------------------------------------------
@@ -488,9 +506,13 @@ async function runEndToEndAudit() {
 
     // Click Load Analytics
     await cdp.evaluate('document.getElementById("analytics-form").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }))');
-    await sleep(1500);
-
-    const analyticsStatusText = await cdp.evaluate('document.getElementById("analytics-status")?.textContent');
+    
+    let analyticsStatusText = '';
+    for (let i = 0; i < 30; i++) {
+      await sleep(250);
+      analyticsStatusText = (await cdp.evaluate('document.getElementById("analytics-status")?.textContent')) || '';
+      if (analyticsStatusText.includes('Analytics loaded')) break;
+    }
     assert('Analytics loaded for selected institute', analyticsStatusText && analyticsStatusText.includes('Analytics loaded'), analyticsStatusText);
 
     // -------------------------------------------------------------

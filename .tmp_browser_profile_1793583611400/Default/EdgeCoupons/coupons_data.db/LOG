@@ -1,0 +1,5 @@
+2026/11/02-07:10:20.740 8094 Creating DB D:\CounselX\.tmp_browser_profile_1793583611400\Default\EdgeCoupons/coupons_data.db since it was missing.
+2026/11/02-07:10:20.846 8094 Reusing MANIFEST D:\CounselX\.tmp_browser_profile_1793583611400\Default\EdgeCoupons/coupons_data.db/MANIFEST-000001
+2026/11/02-07:10:24.387 717c Level-0 table #5: started
+2026/11/02-07:10:24.523 717c Level-0 table #5: 683273 bytes OK
+2026/11/02-07:10:24.553 717c Delete type=0 #3

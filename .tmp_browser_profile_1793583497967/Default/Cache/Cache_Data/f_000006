@@ -1,0 +1,439 @@
+(function () {
+  "use strict";
+
+  window.CX = window.CX || {};
+
+  const api = window.CX.api;
+  const charts = window.CX.charts;
+  const utils = window.CX.utils;
+  const store = window.CX.store;
+
+  const $ = (id) => document.getElementById(id);
+
+  function inferInstituteType(name) {
+    if (!name) return "IIT";
+    const s = String(name).toLowerCase();
+    if (s.includes("technology") && !s.includes("national") && !s.includes("information")) {
+      return "IIT";
+    }
+    if (
+      s.includes("national institute") ||
+      s.includes("nit") ||
+      s.includes("malaviya") ||
+      s.includes("motilal") ||
+      s.includes("maulana") ||
+      s.includes("sardar") ||
+      s.includes("visvesvaraya") ||
+      s.includes("shibpur")
+    ) {
+      return "NIT";
+    }
+    if (s.includes("information technology") || s.includes("iiit")) {
+      return "IIIT";
+    }
+    return "GFTI";
+  }
+
+  function populateSelect(id, items, defaultText = "Select…") {
+    const el = $(id);
+    if (!el) return;
+    const cur = el.value;
+    let html = `<option value="">${defaultText}</option>`;
+    items.forEach((item) => {
+      html += `<option value="${utils.escapeHTML(item)}">${utils.escapeHTML(item)}</option>`;
+    });
+    el.innerHTML = html;
+    if (cur && items.includes(cur)) {
+      el.value = cur;
+    }
+  }
+
+  async function updateContextualFilters(instName) {
+    if (!instName) return;
+
+    try {
+      const res = await api.getCutoffFilters({ instituteName: instName });
+      if (!res || !res.success || !res.filters) return;
+      const f = res.filters;
+
+      const instType = inferInstituteType(instName);
+
+      // 1. Update available quotas for this institute
+      if (f.quotas && f.quotas.length) {
+        populateSelect("an-quota", f.quotas, "All quotas");
+        const quotaEl = $("an-quota");
+        if (instType === "IIT") {
+          quotaEl.value = f.quotas.includes("AI") ? "AI" : f.quotas[0];
+        } else {
+          // For NITs/IIITs/GFTIs, prefer OS or HS over AI
+          if (f.quotas.includes("OS")) {
+            quotaEl.value = "OS";
+          } else if (f.quotas.includes("HS")) {
+            quotaEl.value = "HS";
+          } else {
+            quotaEl.value = f.quotas[0];
+          }
+        }
+      }
+
+      // 2. Update branches datalist for this institute
+      if (f.branches && f.branches.length) {
+        const dl = $("dl-an-branch");
+        if (dl) {
+          dl.innerHTML = f.branches
+            .map((b) => `<option value="${utils.escapeHTML(b)}"></option>`)
+            .join("");
+        }
+
+        const branchInput = $("an-branch");
+        if (branchInput) {
+          const curVal = branchInput.value.trim();
+          // If current branch not in this institute's offerings, pick first
+          if (!curVal || !f.branches.some(b => b.toLowerCase().includes(curVal.toLowerCase()))) {
+            branchInput.value = f.branches[0];
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("Could not load contextual filters for", instName, err);
+    }
+  }
+
+  async function loadAnalyticsOptions() {
+    try {
+      const res = await api.getCutoffFilters();
+      if (!res || !res.success || !res.filters) return;
+      const f = res.filters;
+
+      populateSelect("an-seatCategory", f.seatCategories || ["OPEN", "OBC-NCL", "SC", "ST", "GEN-EWS"], "All categories");
+      populateSelect("an-quota", f.quotas || ["AI", "OS", "HS"], "All quotas");
+      populateSelect("an-genderPool", f.genderPools || ["Gender-Neutral", "Female-only (including Supernumerary)"], "All gender pools");
+      populateSelect("an-rankType", f.rankTypes || ["CRL", "Category Rank"], "All rank types");
+      populateSelect("an-year", f.years || [2026, 2025], "All years");
+
+      const roundEl = $("an-round");
+      if (roundEl && f.rounds) {
+        let html = '<option value="">All rounds</option>';
+        f.rounds.forEach((r) => {
+          html += `<option value="${r}">Round ${r}</option>`;
+        });
+        roundEl.innerHTML = html;
+      }
+
+      if (f.institutes && f.institutes.length) {
+        const dl = $("dl-an-institute");
+        if (dl) {
+          dl.innerHTML = f.institutes
+            .map((inst) => `<option value="${utils.escapeHTML(inst)}"></option>`)
+            .join("");
+        }
+        if (!$("an-institute").value) {
+          $("an-institute").value = f.institutes[0];
+        }
+      }
+
+      // Auto-select text on click/focus
+      const instEl = $("an-institute");
+      if (instEl && !instEl.dataset.hasSelectHandler) {
+        instEl.dataset.hasSelectHandler = "true";
+        instEl.addEventListener("focus", function () { this.select(); });
+        instEl.addEventListener("click", function () { this.select(); });
+        instEl.addEventListener("change", function () {
+          updateContextualFilters(this.value.trim());
+        });
+        instEl.addEventListener("input", function () {
+          if (this.value.trim().length > 3) {
+            updateContextualFilters(this.value.trim());
+          }
+        });
+      }
+
+      const branchEl = $("an-branch");
+      if (branchEl && !branchEl.dataset.hasSelectHandler) {
+        branchEl.dataset.hasSelectHandler = "true";
+        branchEl.addEventListener("focus", function () { this.select(); });
+        branchEl.addEventListener("click", function () { this.select(); });
+      }
+
+      if (f.branches && f.branches.length) {
+        const dl = $("dl-an-branch");
+        if (dl) {
+          dl.innerHTML = f.branches
+            .map((b) => `<option value="${utils.escapeHTML(b)}"></option>`)
+            .join("");
+        }
+        if (!$("an-branch").value) {
+          $("an-branch").value = f.branches[0];
+        }
+      }
+
+      // Set intelligent initial defaults
+      if (!$("an-seatCategory").value) $("an-seatCategory").value = "OPEN";
+      if (!$("an-genderPool").value) $("an-genderPool").value = "Gender-Neutral";
+      if (!$("an-rankType").value) $("an-rankType").value = "CRL";
+
+      // If initial institute is set, update its specific quotas
+      const initialInst = $("an-institute")?.value.trim();
+      if (initialInst) {
+        await updateContextualFilters(initialInst);
+      }
+    } catch (err) {
+      console.warn("Could not load analytics filters:", err);
+    }
+  }
+
+  async function loadAnalytics() {
+    const status = $("analytics-status");
+    if (status) status.textContent = "Loading analytics from backend…";
+
+    const institute = $("an-institute")?.value.trim() || "";
+    const branch = $("an-branch")?.value.trim() || "";
+    const seatCategory = $("an-seatCategory")?.value || "OPEN";
+    let quota = $("an-quota")?.value || "";
+    const genderPool = $("an-genderPool")?.value || "Gender-Neutral";
+    const rankType = $("an-rankType")?.value || "CRL";
+    const year = $("an-year")?.value || "";
+    const round = $("an-round")?.value || "";
+
+    const instType = inferInstituteType(institute);
+
+    // If quota was defaulted to "AI" but user selected an NIT/IIIT/GFTI, adapt to "OS"
+    if (instType !== "IIT" && quota === "AI") {
+      quota = "OS";
+      const qEl = $("an-quota");
+      if (qEl) qEl.value = "OS";
+    }
+
+    try {
+      // ==============================================================
+      // 1. Fetch Round Progression Records (cc-round & cc-openclose)
+      // ==============================================================
+      let roundQuery = {
+        instituteName: institute,
+        branch: branch || undefined,
+        seatCategory: seatCategory || undefined,
+        quota: quota || undefined,
+        genderPool: genderPool || undefined,
+        year: year || 2026,
+        limit: 50
+      };
+
+      let roundRes = await api.getCutoffs(roundQuery);
+      let roundRecords = roundRes?.data || [];
+
+      // Resilient Fallback 1: If 0 records found with quota, retry without quota restriction
+      if (!roundRecords.length && quota) {
+        roundRes = await api.getCutoffs({ ...roundQuery, quota: undefined });
+        roundRecords = roundRes?.data || [];
+        if (roundRecords.length && roundRecords[0].quota) {
+          const qEl = $("an-quota");
+          if (qEl && qEl.querySelector(`option[value="${roundRecords[0].quota}"]`)) {
+            qEl.value = roundRecords[0].quota;
+          }
+        }
+      }
+
+      // Resilient Fallback 2: If still 0 records, retry without branch restriction
+      if (!roundRecords.length && branch) {
+        roundRes = await api.getCutoffs({ ...roundQuery, quota: undefined, branch: undefined });
+        roundRecords = roundRes?.data || [];
+        if (roundRecords.length) {
+          const bEl = $("an-branch");
+          if (bEl) bEl.value = roundRecords[0].academicProgram || roundRecords[0].programName || "";
+        }
+      }
+
+      if (roundRecords.length) {
+        // Group by round to ensure clean 1-entry per round progression
+        const roundMap = new Map();
+        roundRecords.forEach((r) => {
+          const rnd = Number(r.round);
+          if (!roundMap.has(rnd)) {
+            roundMap.set(rnd, {
+              round: rnd,
+              openingRank: Number(r.openingRank) || 0,
+              closingRank: Number(r.closingRank) || 0,
+              year: r.year
+            });
+          }
+        });
+
+        const sortedRounds = Array.from(roundMap.values()).sort((a, b) => a.round - b.round);
+        const roundLabels = sortedRounds.map((r) => `Round ${r.round}`);
+        const roundOpenings = sortedRounds.map((r) => r.openingRank);
+        const roundClosings = sortedRounds.map((r) => r.closingRank);
+
+        // Chart: Round-wise Movement (Line Chart)
+        charts.draw("cc-round", "line", roundLabels, [
+          { label: "Opening Rank", data: roundOpenings, color: "#14b8a6" },
+          { label: "Closing Rank", data: roundClosings, color: "#4f46e5" }
+        ], { reverseRank: true });
+
+        // Chart: Opening vs Closing Rank (Grouped Bar Chart)
+        charts.draw("cc-openclose", "bar", roundLabels, [
+          { label: "Opening Rank", data: roundOpenings, color: "#14b8a6" },
+          { label: "Closing Rank", data: roundClosings, color: "#7c3aed" }
+        ], { reverseRank: true });
+      } else {
+        const ccRound = $("cc-round");
+        if (ccRound) charts.empty(ccRound, "No round data found for this selection.");
+        const ccOpenClose = $("cc-openclose");
+        if (ccOpenClose) charts.empty(ccOpenClose, "No opening/closing data found for this selection.");
+      }
+
+      // ==============================================================
+      // 2. Fetch Multi-Year Cutoff Comparison (cc-year)
+      // ==============================================================
+      try {
+        const multiYearRes = await api.getCutoffs({
+          instituteName: institute,
+          branch: branch || undefined,
+          seatCategory: seatCategory || undefined,
+          limit: 100
+        });
+        const myRecords = multiYearRes?.data || [];
+
+        const yearMap = new Map();
+        myRecords.forEach((r) => {
+          const yr = String(r.year || 2026);
+          const cr = Number(r.closingRank);
+          if (cr && (!yearMap.has(yr) || cr > yearMap.get(yr))) {
+            yearMap.set(yr, cr);
+          }
+        });
+
+        if (yearMap.size > 1) {
+          const yearsSorted = Array.from(yearMap.keys()).sort();
+          const yearCutoffs = yearsSorted.map((yr) => yearMap.get(yr));
+          charts.draw("cc-year", "line", yearsSorted, [
+            { label: "Final Closing Rank", data: yearCutoffs, color: "#4f46e5" }
+          ], { reverseRank: true });
+        } else if (roundRecords.length) {
+          // If only 1 year in DB for this branch, show round-by-round trajectory for that year
+          const yr = String(roundRecords[0].year || 2026);
+          const roundNames = roundRecords.map(r => `${yr} (R${r.round})`);
+          const rCloses = roundRecords.map(r => Number(r.closingRank));
+          charts.draw("cc-year", "line", roundNames, [
+            { label: `Closing Rank (${yr})`, data: rCloses, color: "#4f46e5" }
+          ], { reverseRank: true });
+        } else {
+          const ccYear = $("cc-year");
+          if (ccYear) charts.empty(ccYear, "No multi-year records available for this selection.");
+        }
+      } catch (e) {
+        console.warn("Year-wise chart calculation error:", e);
+      }
+
+      // ==============================================================
+      // 3. Fetch Branch-Wise Trends at this Institute (cc-branches)
+      // ==============================================================
+      try {
+        const branchRes = await api.getCutoffs({
+          instituteName: institute,
+          seatCategory: seatCategory || "OPEN",
+          round: round || 1,
+          limit: 50
+        });
+        const bRecords = branchRes?.data || [];
+
+        if (bRecords.length) {
+          const branchCutoffsMap = new Map();
+          bRecords.forEach((r) => {
+            const rawName = r.academicProgram || r.programName || "Engineering";
+            const shortName = rawName.replace(/\s*\([^)]*\)/g, "").trim();
+            const cr = Number(r.closingRank);
+            if (cr && (!branchCutoffsMap.has(shortName) || cr < branchCutoffsMap.get(shortName))) {
+              branchCutoffsMap.set(shortName, cr);
+            }
+          });
+
+          const branchEntries = Array.from(branchCutoffsMap.entries())
+            .sort((a, b) => a[1] - b[1])
+            .slice(0, 8);
+
+          const branchLabels = branchEntries.map((e) => e[0]);
+          const branchData = branchEntries.map((e) => e[1]);
+
+          charts.draw("cc-branches", "bar", branchLabels, [
+            { label: "Closing Rank (Round 1)", data: branchData, color: "#0ea5e9" }
+          ], { horizontal: true, reverseRank: false });
+        } else {
+          const ccBranches = $("cc-branches");
+          if (ccBranches) charts.empty(ccBranches, "No branch records found for this institute.");
+        }
+      } catch (e) {
+        console.warn("Branch-wise chart calculation error:", e);
+      }
+
+      // ==============================================================
+      // 4. Fetch Comparative Peer Institutes (cc-institutes)
+      // ==============================================================
+      try {
+        const effectiveBranch = branch || (roundRecords[0]?.academicProgram) || "Computer Science";
+        const instQuery = {
+          branch: effectiveBranch,
+          seatCategory: seatCategory || "OPEN",
+          year: year || 2026,
+          round: round || 1,
+          limit: 25
+        };
+
+        const instRes = await api.getCutoffs(instQuery);
+        const instRecords = instRes?.data || [];
+
+        if (instRecords.length) {
+          const peerMap = new Map();
+          instRecords.forEach((r) => {
+            const rawInst = r.instituteName || r.institute || "";
+            const shortInst = rawInst
+              .replace("Indian Institute of Technology", "IIT")
+              .replace("National Institute of Technology", "NIT")
+              .replace("Indian Institute of Information Technology", "IIIT");
+            const cr = Number(r.closingRank);
+            if (cr && (!peerMap.has(shortInst) || cr < peerMap.get(shortInst))) {
+              peerMap.set(shortInst, cr);
+            }
+          });
+
+          const peerEntries = Array.from(peerMap.entries())
+            .sort((a, b) => a[1] - b[1])
+            .slice(0, 10);
+
+          const instLabels = peerEntries.map((e) => e[0]);
+          const instClosings = peerEntries.map((e) => e[1]);
+
+          charts.draw("cc-institutes", "bar", instLabels, [
+            { label: "Closing Rank", data: instClosings, color: "#4f46e5" }
+          ], { horizontal: true, reverseRank: false });
+        } else {
+          const ccInst = $("cc-institutes");
+          if (ccInst) charts.empty(ccInst, "No comparative peer institute records found.");
+        }
+      } catch (e) {
+        console.warn("Institute comparison chart error:", e);
+      }
+
+      if (status) {
+        status.textContent = `Analytics loaded for ${institute || "selection"}. Found ${roundRecords.length} historical round records.`;
+      }
+    } catch (err) {
+      console.error("Analytics load error:", err);
+      if (status) status.textContent = `Could not load analytics: ${err.message}`;
+    }
+  }
+
+  function init() {
+    loadAnalyticsOptions();
+
+    $("analytics-form")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      loadAnalytics();
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
+
+  window.CX.analytics = {
+    load: loadAnalytics
+  };
+})();
